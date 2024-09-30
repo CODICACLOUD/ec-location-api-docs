@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: Ecommerce - Location API
+  contact:
+    email: support@codica.gr
+  version: '1.0'
+servers:
+  - url: https://dev-new.xpatit.gr/api/v1/ec-location
+tags:
+  - name: ec-country
+    description: Management of countries
+  - name: ec-state
+    description: Management of states
+
+paths:
+  /ec-country:
+    get:
+      tags:
+        - ec-country
+      summary: Get countries
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          description: The numbers of items to return
+          required: true
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: enabled
+          schema:
+            type: boolean
+          description: To get enabled countries
+        - in: query
+          name: default
+          schema:
+            type: boolean
+          description: To get default countries
+        - in: query
+          name: pinned
+          schema:
+            type: boolean
+          description: To get the pinned countries
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  countries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Country'
+        '400':
+          $ref: '#/components/responses/ValidatorError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/MissingAbilityError'
+  /ec-state:
+    get:
+      tags:
+        - ec-state
+      summary: Get states
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          description: The numbers of items to return
+          required: true
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: enabled
+          schema:
+            type: boolean
+          description: To get enabled states
+        - in: query
+          name: ec_country_id
+          schema:
+            type: integer
+            minimum: 1
+          description: Get states by country id
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  states:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/State'
+        '400':
+          $ref: '#/components/responses/ValidatorError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/MissingAbilityError'
+
+security:
+  - bearerAuth: []
+components:
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+    MissingAbilityError:
+      description: Token doesn't not have all required abilities
+    ValidatorError:
+      description: The required fields are not present/correct.
+  schemas:
+    Country:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 83
+          minimum: 1
+        enabled:
+          type: boolean
+          example: true
+        default:
+          type: boolean
+          example: true
+        pinned:
+          type: boolean
+          example: true
+        code_numeric:
+          type: integer
+          example: 300
+          nullable: true
+        code_alpha_3:
+          type: string
+          example: "GRC"
+          nullable: true
+        code_alpha_2:
+          type: string
+          example: "GR"
+          nullable: true
+        vat_prefix:
+          type: string
+          example: "EL"
+          nullable: true
+        translations:
+          $ref: '#/components/schemas/CountryTranslations'
+    CountryTranslations:
+      type: object
+      properties:
+        locale:
+          type: object
+          properties:
+            title:
+              type: string
+              example: "locale's title"
+            state_label:
+              type: string
+              nullable: true
+              example: null
+              description: "label to show on site"
+    State:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 473
+          minimum: 1
+        enabled:
+          type: boolean
+          example: true
+        code_2:
+          type: string
+          example: "ΑΡ"
+          nullable: true
+        code_3:
+          type: string
+          example: "ΑΡΓ"
+          nullable: true
+        code_3166_2:
+          type: string
+          example: null
+          nullable: true
+        ec_country_id:
+          type: integer
+          example: 83
+          minimum: 1
+        translations:
+          $ref: '#/components/schemas/StateTranslations'
+    StateTranslations:
+      type: object
+      properties:
+        locale:
+          type: object
+          properties:
+            title:
+              type: string
+              example: "locale's title"
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
