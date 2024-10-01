@@ -5,7 +5,7 @@ info:
     email: support@codica.gr
   version: '1.0'
 servers:
-  - url: https://dev-new.xpatit.gr/api/v1/ec-location
+  - url: https://domain.com/api/v1/ec-location
 tags:
   - name: ec-country
     description: Management of countries
